@@ -213,7 +213,8 @@ static u64 prev_hz = 1;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
-    if (val == 0){
+    if (first_push == 0){
+        first_push = 1;
         prev_hz = get_jiffies_64();
     }
     else{
