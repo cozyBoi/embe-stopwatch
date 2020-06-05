@@ -207,12 +207,13 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     
     if(first_push){
         prev = get_jiffies_64();
+        first_push = 0;
     }
     else{
         curr = get_jiffies_64();
-        first_push = 0;
         aassign();
         prev = curr;
+        first_push = 1;
     }
     
     if(ENDENDEND){
