@@ -233,8 +233,8 @@ int __init iom_fpga_driver_init(void)
     request_irq (0x1000, home_handler, NULL, "home", NULL);
     request_irq (0x1001, back_handler, NULL, "back", NULL);
     request_irq (0x1002, vol_up_handler, NULL, "vol_up", NULL);
-    request_irq (0x1003, vol_down_handler_push, NULL, "vol_down_push", NULL);
-    request_irq (0x1004, vol_down_handler_pull, NULL, "vol_down_pull", NULL);
+    request_irq (0x1003, vol_down_push_handler, NULL, "vol_down_push", NULL);
+    request_irq (0x1004, vol_down_pull_handler, NULL, "vol_down_pull", NULL);
     
     return 0;
 }
