@@ -26,8 +26,8 @@
 #include <asm/uaccess.h>
 #include <linux/cdev.h>
 
-wait_queue_head_t wq;
-DECLARE_WAIT_QUEUE_HEAD (wq);
+wait_queue_head_t wq_write;
+DECLARE_WAIT_QUEUE_HEAD (wq_write);
 
 #define IOM_FND_MAJOR 261        // ioboard fpga device major number
 #define IOM_FND_NAME "fpga_fnd"        // ioboard fpga device name
@@ -43,7 +43,7 @@ DECLARE_WAIT_QUEUE_HEAD (wq);
 //Global variable
 static int fpga_fnd_port_usage = 0;
 static unsigned char *iom_fpga_fnd_addr;
-
+static struct cdev inter_cdev;
 static int kernel_timer_usage = 0;
 
 static struct struct_mydata {
@@ -68,7 +68,7 @@ irqreturn_t vol_down_pull_handler( int irq, void * dev_id, struct pt_regs *regs 
 int fnd_write(unsigned int value[4]);
 
 // define file_operations structure
-struct file_operations iom_fpga_driver_fops =
+struct file_operations inter_fops =
 {
 owner:        THIS_MODULE,
 open:        iom_fpga_driver_open,
@@ -113,7 +113,7 @@ int iom_fpga_driver_open(struct inode *minode, struct file *mfile)
 
 int iom_fpga_driver_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos){
     printk("before sleep\n");
-    interruptible_sleep_on(&wq);
+    interruptible_sleep_on(&wq_write);
     printk("after sleep\n");
     return 0;
 }
@@ -250,19 +250,43 @@ irqreturn_t vol_down_pull_handler( int irq, void * dev_id, struct pt_regs *regs 
     if(end_of_program){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
-        wake_up_interruptible(&wq);
+        wake_up_interruptible(&wq_write);
     }
     
     return IRQ_HANDLED;
 }
 
+static int inter_register_cdev(void)
+{
+    int error;
+    inter_dev = MKDEV(242, 0);
+    error = register_chrdev_region(inter_dev,1,"inter");
+    if(error<0) {
+        printk(KERN_WARNING "inter: can't get major %d\n", inter_major);
+        return result;
+    }
+    printk(KERN_ALERT "major number = %d\n", 242);
+    cdev_init(&inter_cdev, &inter_fops);
+    inter_cdev.owner = THIS_MODULE;
+    inter_cdev.ops = &inter_fops;
+    error = cdev_add(&inter_cdev, inter_dev, 1);
+    if(error)
+    {
+        printk(KERN_NOTICE "inter Register Error %d\n", error);
+    }
+    return 0;
+}
+
 int __init iom_fpga_driver_init(void)
 {
-    int result;
+    if((result = inter_register_cdev()) < 0 )
+        return result;
+    printk(KERN_ALERT "Init Module Success \n");
+    printk(KERN_ALERT "Device : /dev/inter, Major Num : 242 \n");
+    
     //get io port address space
     iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);
     end_of_program = 0;
-    result = register_chrdev(242, "/dev/stopwatch", &iom_fpga_driver_fops);
     if(result < 0) {
         printk(KERN_WARNING"Can't get any major of FND\n");
         return result;
@@ -285,8 +309,8 @@ void __exit iom_fpga_driver_exit(void)
     
     printk("kernel_timer_exit\n");
     del_timer_sync(&mydata.timer);
-    
-    unregister_chrdev(242, "/dev/stopwatch");
+    cdev_del(&inter_cdev);
+    unregister_chrdev_region(inter_dev, 1);
 }
 
 module_init(iom_fpga_driver_init);
