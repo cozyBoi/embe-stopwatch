@@ -206,19 +206,24 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
     return IRQ_HANDLED;
 }
 
+static int first_push = 0;
+
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
-    mydata2.timer.expires = jiffies + HZ/10;
-    mydata2.timer.data = (unsigned long)&mydata2;
-    mydata2.timer.function = end_three_sencond;
-    add_timer(&mydata2.timer);
-    
+    if(!first_push){
+        first_push = 1;
+        mydata2.timer.expires = jiffies + HZ/10;
+        mydata2.timer.data = (unsigned long)&mydata2;
+        mydata2.timer.function = end_three_sencond;
+        add_timer(&mydata2.timer);
+    }
     exit_signal_down = 1;
     int i;
     if(end_of_program){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
         wake_up_interruptible(&wq_write);
+        first_push = 0;
     }
     return IRQ_HANDLED;
 }
@@ -321,6 +326,7 @@ static int __init inter_init(void) {
 static void __exit inter_exit(void) {
     iounmap(iom_fpga_fnd_addr);
     del_timer_sync(&mydata.timer);
+    del_timer_sync(&mydata2.timer);
     cdev_del(&inter_cdev);
 	unregister_chrdev_region(inter_dev, 1);
 	printk(KERN_ALERT "Remove Module Success \n");
