@@ -187,12 +187,12 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 }
 
 
-static u64 prev_hz = 1;
+static unsigned long prev_hz = 1;
 static int end_of_program_ = 0;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
-    /*
+    
     if (first_push){
         printk("first push");
         first_push = 0;
@@ -200,7 +200,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     }
     else{
         printk("n'th push");
-        u64 cur_hz = get_jiffies_64();
+        unsigned long cur_hz = get_jiffies_64();
         if (cur_hz - prev_hz >= 2.9*HZ){
             end_of_program_ = 1;
             exit_signal = 1;
@@ -208,7 +208,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         prev_hz = cur_hz;
         first_push = 1;
     }
-    */
+    
     int i;
     if(end_of_program_){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
