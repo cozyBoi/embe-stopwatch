@@ -214,6 +214,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     add_timer(&mydata2.timer);
     
     exit_signal_down = 1;
+    int i;
     if(end_of_program){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
