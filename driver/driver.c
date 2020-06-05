@@ -196,10 +196,10 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     
     if (first_push){
         first_push = 0;
-        prev_hz = jiffies;
+        prev_hz = 20;
     }
     else{
-        curr_hz = jiffies;
+        curr_hz = 10;
         if (curr_hz - prev_hz >= 2.9*HZ){
             end_of_program_ = 1;
             exit_signal = 1;
