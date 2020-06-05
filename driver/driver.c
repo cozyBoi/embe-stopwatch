@@ -83,7 +83,7 @@ static struct file_operations inter_fops =
 };
 
 
-static int exit_signal = 0;
+static int EXITEXIT = 0;
 static unsigned int fnd_value[4];
 static int timer_init = 0;
 static int first_push = 1;
@@ -136,7 +136,7 @@ static void kernel_timer_blink(unsigned long timeout) {
     unsigned char string[33];
     printk("kernel_timer_blink %d\n", p_data->count);
     
-    if(exit_signal){
+    if(EXITEXIT){
         return;
     }
     if(blinking_cnt >= 10){
@@ -159,7 +159,7 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 	printk("home handler\n");
     if(!timer_init){
         printk("hi!\n");
-        exit_signal = 0;
+        EXITEXIT = 0;
         timer_init = 1;
         mydata.timer.expires = jiffies + HZ/10;
         mydata.timer.data = (unsigned long)&mydata;
@@ -171,14 +171,14 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 
 irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt2!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 12)));
-    exit_signal = 1;
+    EXITEXIT = 1;
     timer_init = 0;
     return IRQ_HANDLED;
 }
 
 irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
-    exit_signal = 1;
+    EXITEXIT = 1;
     timer_init = 0;
     int i = 0;
     for(i = 0; i < 4; i++) fnd_value[i] = 0;
@@ -202,7 +202,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         first_push = 1;
         if(curr - prev > 2.9 * 1000){
             ENDENDEND = 0;
-            exit_signal = 1;
+            EXITEXIT = 1;
         }
         prev = curr;
     }
@@ -267,7 +267,7 @@ static int inter_release(struct inode *minode, struct file *mfile){
     fpga_fnd_port_usage = 0;
     kernel_timer_usage = 0;
     
-    exit_signal = 0;
+    EXITEXIT = 0;
     int i = 0;
     for(i = 0; i < 4; i++) fnd_value[i] = 0;
     fnd_write(fnd_value);
