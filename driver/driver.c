@@ -106,11 +106,14 @@ int iom_fpga_driver_open(struct inode *minode, struct file *mfile)
     
     fpga_fnd_port_usage = 1;
     kernel_timer_usage = 1;
+    
     return 0;
 }
 
 int iom_fpga_driver_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos){
+    printk("before sleep\n");
     interruptible_sleep_on(&wq);
+    printk("after sleep\n");
     return 0;
 }
 
