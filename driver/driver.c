@@ -85,7 +85,7 @@ static struct file_operations inter_fops =
 };
 
 
-static int exit_signal = 0, exit_signal_down = 0;
+static int exit_signal = 0;
 static unsigned int fnd_value[4];
 static int timer_init = 0;
 static int first_push = 1;
@@ -204,17 +204,19 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         u64 cur_hz = get_jiffies_64();
         if (cur_hz - prev_hz >= 2.9*HZ){
             end_of_program_ = 1;
+            exit_signal = 1;
         }
         prev_hz = cur_hz;
+        first_push = 1;
     }
     
-    exit_signal_down = 1;
     int i;
     if(end_of_program_){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
         first_push = 1;
         end_of_program_ = 0;
+        del_timer_sync(&mydata.timer);
         wake_up_interruptible(&wq_write);
     }
     return IRQ_HANDLED;
@@ -260,7 +262,6 @@ static int inter_open(struct inode *minode, struct file *mfile){
 
 static int inter_release(struct inode *minode, struct file *mfile){
     del_timer_sync(&mydata2.timer);
-    del_timer_sync(&mydata.timer);
     
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 11)), NULL);
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 12)), NULL);
@@ -271,7 +272,6 @@ static int inter_release(struct inode *minode, struct file *mfile){
     kernel_timer_usage = 0;
     
     exit_signal = 0;
-    exit_signal_down = 0;
     int i = 0;
     for(i = 0; i < 4; i++) fnd_value[i] = 0;
     fnd_write(fnd_value);
