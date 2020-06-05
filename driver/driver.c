@@ -192,6 +192,7 @@ static int end_of_program_ = 0;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
+    /*
     if (first_push){
         printk("first push");
         first_push = 0;
@@ -216,7 +217,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         end_of_program_ = 0;
         del_timer_sync(&mydata.timer);
         //__wake_up(&wq_write, 1, 1, NULL);
-    }
+    }*/
     return IRQ_HANDLED;
 }
 
