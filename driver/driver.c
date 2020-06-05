@@ -26,6 +26,7 @@
 #include <asm/uaccess.h>
 #include <linux/cdev.h>
 
+wait_queue_head_t wq;
 DECLARE_WAIT_QUEUE_HEAD (wq);
 
 #define IOM_FND_MAJOR 261        // ioboard fpga device major number
