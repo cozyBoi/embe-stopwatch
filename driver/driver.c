@@ -192,7 +192,8 @@ static int ENDENDEND = 0;
 
 void aassign(){
     int mminus = curr - prev;
-    int condi = (mminus > (2900));
+    unsigned long proddd = 3 * HZ;
+    int condi = (mminus > proddd);
     if(condi){
         ENDENDEND = 1;
         EXITEXIT = 1;
@@ -204,10 +205,10 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     int i;
     
     if(first_push){
-        prev = jiffies;
+        prev = get_jiffies_64();
     }
     else{
-        curr = jiffies;
+        curr = get_jiffies_64();
         first_push = 1;
         aassign();
         prev = curr;
