@@ -241,13 +241,9 @@ int __init iom_fpga_driver_init(void)
 
 void __exit iom_fpga_driver_exit(void)
 {
-    iounmap(iom_fpga_dot_addr);
-    iounmap(iom_fpga_text_lcd_addr);
-    iounmap(iom_fpga_led_addr);
     iounmap(iom_fpga_fnd_addr);
     
     printk("kernel_timer_exit\n");
-    printk("%d\n", kernel_call_cnt); //print
     del_timer_sync(&mydata.timer);
     
     unregister_chrdev(242, "/dev/stopwatch");
