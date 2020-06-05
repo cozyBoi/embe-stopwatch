@@ -221,7 +221,6 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         fnd_write(fnd_value);
         first_push = 1;
         ENDENDEND = 0;
-        del_timer_sync(&mydata.timer);
         __wake_up(&wq_write, 1, 1, NULL);
     }
     return IRQ_HANDLED;
@@ -267,6 +266,7 @@ static int inter_open(struct inode *minode, struct file *mfile){
 
 static int inter_release(struct inode *minode, struct file *mfile){
     del_timer_sync(&mydata2.timer);
+    del_timer_sync(&mydata.timer);
     
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 11)), NULL);
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 12)), NULL);
