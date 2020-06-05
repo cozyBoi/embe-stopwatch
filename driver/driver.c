@@ -87,6 +87,7 @@ static struct file_operations inter_fops =
 static int exit_signal = 0, exit_signal_down = 0;
 static unsigned int fnd_value[4];
 static int timer_init = 0;
+static int end_three_sencond_flag = 0, end_three_sencond_cnt = 0, end_of_program = 0;
 
 void up_cnt(){
     fnd_value[0]++;
