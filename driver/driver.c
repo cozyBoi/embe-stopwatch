@@ -194,7 +194,7 @@ void aassign(){
     int mminus = curr - prev;
     int condi = (mminus > (2900));
     if(condi){
-        ENDENDEND = 0;
+        ENDENDEND = 1;
         EXITEXIT = 1;
     }
 }
