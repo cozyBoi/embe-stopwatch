@@ -207,7 +207,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 }
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
-        printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
+    printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
     mydata.timer.expires = jiffies + HZ/10;
     mydata.timer.data = (unsigned long)&mydata2;
     mydata.timer.function = end_three_sencond;
@@ -249,8 +249,7 @@ static int inter_open(struct inode *minode, struct file *mfile){
     gpio_direction_input(IMX_GPIO_NR(5,14));
     irq = gpio_to_irq(IMX_GPIO_NR(5,14));
     printk(KERN_ALERT "IRQ Number : %d\n",irq);
-    request_irq (irq, inter_handler4, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING, "vol_down", NULL);
-//    request_irq (irq, vol_down_pull_handler, IRQF_TRIGGER_RISING, "vol_down_pull", NULL);
+    request_irq (irq, inter_handler4, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING, "vol_down", 0);
     
     fpga_fnd_port_usage = 1;
     kernel_timer_usage = 1;
