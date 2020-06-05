@@ -17,7 +17,9 @@
 #include <linux/uaccess.h>
 #include <linux/interrupt.h>
 #include <linux/wait.h>
-
+#include <linux/sched.h>
+#include <asm/irq.h>
+#include <asm/system.h>
 
 DECLARE_WAIT_QUEUE_HEAD (wq);
 
