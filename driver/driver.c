@@ -26,6 +26,22 @@
 #include <asm/uaccess.h>
 #include <linux/cdev.h>
 
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/interrupt.h>
+#include <asm/irq.h>
+#include <mach/gpio.h>
+#include <linux/platform_device.h>
+#include <asm/gpio.h>
+#include <linux/wait.h>
+#include <linux/fs.h>
+#include <linux/init.h>
+#include <asm/io.h>
+#include <asm/uaccess.h>
+#include <linux/ioport.h>
+#include <linux/version.h>
+#include <linux/cdev.h>
+
 static int inter_major=242, inter_minor=0;
 static int result;
 static dev_t inter_dev;
