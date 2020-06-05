@@ -151,7 +151,10 @@ static void kernel_timer_blink(unsigned long timeout) {
     unsigned char string[33];
     printk("kernel_timer_blink %d\n", p_data->count);
     
-    if(exit_signal) return;
+    if(exit_signal){
+        exit_signal = 0;
+        return;
+    }
     if(blinking_cnt >= 10){
         blinking_cnt = 0;
         up_cnt();
