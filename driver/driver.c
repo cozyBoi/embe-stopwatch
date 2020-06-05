@@ -259,7 +259,7 @@ irqreturn_t vol_down_pull_handler( int irq, void * dev_id, struct pt_regs *regs 
 
 static int inter_register_cdev(void)
 {
-    int error;
+    int error, result;
     inter_dev = MKDEV(242, 0);
     error = register_chrdev_region(inter_dev,1,"inter");
     if(error<0) {
@@ -289,10 +289,6 @@ int __init iom_fpga_driver_init(void)
     //get io port address space
     iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);
     end_of_program = 0;
-    if(result < 0) {
-        printk(KERN_WARNING"Can't get any major of FND\n");
-        return result;
-    }
     
     printk("kernel_timer_init\n");
     
