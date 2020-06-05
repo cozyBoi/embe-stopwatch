@@ -263,7 +263,7 @@ static int inter_register_cdev(void)
     inter_dev = MKDEV(242, 0);
     error = register_chrdev_region(inter_dev,1,"inter");
     if(error<0) {
-        printk(KERN_WARNING "inter: can't get major %d\n", inter_major);
+        printk(KERN_WARNING "inter: can't get major %d\n", 242);
         return result;
     }
     printk(KERN_ALERT "major number = %d\n", 242);
