@@ -85,11 +85,11 @@ int iom_fpga_driver_open(struct inode *minode, struct file *mfile)
     int irq;
     gpio_direction_input(IMX_GPIO_NR(1,11));
     irq = gpio_to_irq(IMX_GPIO_NR(1,11));
-    request_irq (irq, &home_handler, IRQF_TRIGGER_FALLING, "home", NULL);
+    request_irq (irq, home_handler, IRQF_TRIGGER_FALLING, "home", NULL);
     
     gpio_direction_input(IMX_GPIO_NR(1,12));
     irq = gpio_to_irq(IMX_GPIO_NR(1,12));
-    request_irq (irq, &back_handler, IRQF_TRIGGER_FALLING, "back", NULL);
+    request_irq (irq, back_handler, IRQF_TRIGGER_FALLING, "back", NULL);
     
     gpio_direction_input(IMX_GPIO_NR(2,15));
     irq = gpio_to_irq(IMX_GPIO_NR(2,15));
@@ -189,6 +189,7 @@ int fnd_write(unsigned int _value[4]){
 static int timer_init = 0;
 
 irqreturn_t home_handler( int irq, void * dev_id, struct pt_regs *regs ){
+    printk("home handler\n");
     if(!timer_init){
         timer_init = 1;
         mydata.timer.expires = jiffies + 100;
