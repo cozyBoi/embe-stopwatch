@@ -194,7 +194,7 @@ void aassign(){
     unsigned long mminus = curr - prev;
     unsigned long proddd = 3 * HZ;
     printk("%ld - %ld\n", mminus, proddd);
-    int condi = (mminus > proddd);
+    int condi = (mminus >= proddd);
     if(condi){
         ENDENDEND = 1;
         EXITEXIT = 1;
