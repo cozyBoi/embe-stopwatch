@@ -62,6 +62,7 @@ static struct struct_mydata {
 };
 
 struct struct_mydata mydata;
+struct struct_mydata mydata2;
 
 static int blink_cnt = 1;
 // define functions...
@@ -139,6 +140,8 @@ int fnd_write(unsigned int _value[4]){
     return 0;
 }
 
+static int blinking_cnt = 0;
+
 static void kernel_timer_blink(unsigned long timeout) {
     printk("start blink\n");
     struct struct_mydata *p_data = (struct struct_mydata*)timeout;
@@ -146,14 +149,17 @@ static void kernel_timer_blink(unsigned long timeout) {
     printk("kernel_timer_blink %d\n", p_data->count);
     
     if(exit_signal) return;
-    up_cnt();
-    fnd_write(fnd_value);
-    
-    mydata.timer.expires = get_jiffies_64() + 100;
+    if(blinking_cnt >= 10){
+        blinking_cnt = 0;
+        up_cnt();
+        fnd_write(fnd_value);
+    }
+    mydata.timer.expires = get_jiffies_64() + HZ/10;
     mydata.timer.data = (unsigned long)&mydata;
     mydata.timer.function = kernel_timer_blink;
     
     add_timer(&mydata.timer);
+    blinking_cnt++;
 }
 
 
@@ -162,8 +168,9 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 
 	printk("home handler\n");
     if(!timer_init){
+        printk("hi!\n");
         timer_init = 1;
-        mydata.timer.expires = jiffies + 100;
+        mydata.timer.expires = jiffies + HZ/10;
         mydata.timer.data = (unsigned long)&mydata;
         mydata.timer.function = kernel_timer_blink;
         add_timer(&mydata.timer);
@@ -243,7 +250,7 @@ static int inter_open(struct inode *minode, struct file *mfile){
     irq = gpio_to_irq(IMX_GPIO_NR(5,14));
     printk(KERN_ALERT "IRQ Number : %d\n",irq);
     request_irq (irq, vol_down_push_handler, IRQF_TRIGGER_FALLING, "vol_down_push", NULL);
-    request_irq (irq, vol_down_pull_handler, IRQF_TRIGGER_RISING, "vol_down_pull", NULL);
+//    request_irq (irq, vol_down_pull_handler, IRQF_TRIGGER_RISING, "vol_down_pull", NULL);
     
     fpga_fnd_port_usage = 1;
     kernel_timer_usage = 1;
@@ -265,10 +272,8 @@ static int inter_release(struct inode *minode, struct file *mfile){
 }
 
 static int inter_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos ){
-	if(interruptCount==0){
-                printk("sleep on\n");
-                interruptible_sleep_on(&wq_write);
-         }
+    printk("sleep on\n");
+    interruptible_sleep_on(&wq_write);
 	printk("write\n");
 	return 0;
 }
