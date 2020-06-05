@@ -52,6 +52,12 @@ static int blink_cnt = 1;
 int iom_fpga_driver_open(struct inode *minode, struct file *mfile);
 int iom_fpga_driver_release(struct inode *minode, struct file *mfile);
 int iom_fpga_driver_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos);
+irqreturn_t home_handler( int irq, void * dev_id, struct pt_regs *regs );
+irqreturn_t back_handler( int irq, void * dev_id, struct pt_regs *regs );
+irqreturn_t vol_up_handler( int irq, void * dev_id, struct pt_regs *regs );
+irqreturn_t vol_down_push_handler( int irq, void * dev_id, struct pt_regs *regs );
+irqreturn_t vol_down_pull_handler( int irq, void * dev_id, struct pt_regs *regs );
+
 
 int fnd_write(unsigned int value[4]);
 
