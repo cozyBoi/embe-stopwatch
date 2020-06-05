@@ -230,7 +230,6 @@ int __init iom_fpga_driver_init(void)
     init_timer(&(mydata.timer));
     
     printk("init module\n");
-    kernel_call_cnt = 0;
     
     printk("init module, %s major number : %d\n", "dev drivers", 242);
     
