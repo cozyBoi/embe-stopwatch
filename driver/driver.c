@@ -187,27 +187,24 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 }
 
 
-unsigned long jinhoon = 1;
-unsigned long seungjin = 1;
+static u64 prev_hz = 1;
+static u64 curr_hz = 1;
 static int end_of_program_ = 0;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
     
     if (first_push){
-        printk("first push");
         first_push = 0;
-        jinhoon = get_jiffies_64();
+        prev_hz = get_jiffies_64();
     }
     else{
-        
-        printk("n'th push");
-        seungjin = get_jiffies_64();
-        if (seungjin - jinhoon >= 2.9*HZ){
+        curr_hz = get_jiffies_64();
+        if (curr_hz - prev_hz >= 2.9*HZ){
             end_of_program_ = 1;
-            exit_signal = 1;
+            //exit_signal = 1;
         }
-        jinhoon = seungjin;
+        prev_hz = curr_hz;
         first_push = 1;
     }
     
@@ -278,7 +275,7 @@ static int inter_release(struct inode *minode, struct file *mfile){
     fnd_write(fnd_value);
     timer_init = 0;
     first_push = 1;
-    jinhoon = 1;
+    prev_hz = 1;
     end_of_program_ = 0;
     blinking_cnt = 0;
     
