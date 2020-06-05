@@ -44,6 +44,7 @@ DECLARE_WAIT_QUEUE_HEAD (wq_write);
 static int fpga_fnd_port_usage = 0;
 static unsigned char *iom_fpga_fnd_addr;
 static struct cdev inter_cdev;
+static dev_t inter_dev;
 static int kernel_timer_usage = 0;
 
 static struct struct_mydata {
