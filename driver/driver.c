@@ -192,7 +192,8 @@ static int ENDENDEND = 0;
 
 void aassign(){
     int mminus = curr - prev;
-    if(mminus > 2.9 * HZ){
+    int condi = (mminus > (2.9 * HZ));
+    if(condi){
         ENDENDEND = 0;
         EXITEXIT = 1;
     }
