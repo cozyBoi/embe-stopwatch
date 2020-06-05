@@ -212,6 +212,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
+    /*
     if(!first_push){
         first_push = 1;
         mydata2.timer.expires = jiffies + HZ/10;
@@ -219,14 +220,15 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         mydata2.timer.function = end_three_sencond;
         add_timer(&mydata2.timer);
     }
+     */
     exit_signal_down = 1;
     int i;
-    if(end_of_program){
+    //if(end_of_program){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
         wake_up_interruptible(&wq_write);
         first_push = 0;
-    }
+    //}
     return IRQ_HANDLED;
 }
 
