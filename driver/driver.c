@@ -92,7 +92,12 @@ static int end_three_sencond_flag = 0, end_three_sencond_cnt = 0, end_of_program
 static int first_push = 0;
 
 void end_three_sencond(){
-    if(end_three_sencond_cnt >= 30){
+    mydata2.timer.expires = jiffies + HZ/2;
+    mydata2.timer.data = (unsigned long)&mydata2;
+    mydata2.timer.function = end_three_sencond;
+    add_timer(&mydata2.timer);
+    
+    if(end_three_sencond_cnt >= 6){
         end_of_program = 1;
     }
     
@@ -209,7 +214,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
     if(!first_push){
         first_push = 1;
-        mydata2.timer.expires = jiffies + HZ * 3;
+        mydata2.timer.expires = jiffies + HZ/2;
         mydata2.timer.data = (unsigned long)&mydata2;
         mydata2.timer.function = end_three_sencond;
         add_timer(&mydata2.timer);
