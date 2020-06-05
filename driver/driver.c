@@ -278,7 +278,7 @@ static int inter_release(struct inode *minode, struct file *mfile){
     fnd_write(fnd_value);
     timer_init = 0;
     first_push = 1;
-    prev_hz = 1;
+    jinhoon = 1;
     end_of_program_ = 0;
     blinking_cnt = 0;
     
