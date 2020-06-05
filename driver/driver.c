@@ -89,6 +89,7 @@ static int exit_signal = 0, exit_signal_down = 0;
 static unsigned int fnd_value[4];
 static int timer_init = 0;
 static int end_three_sencond_flag = 0, end_three_sencond_cnt = 0, end_of_program = 0;
+static int first_push = 0;
 
 void end_three_sencond(){
     if(end_three_sencond_cnt >= 30){
@@ -202,7 +203,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
     return IRQ_HANDLED;
 }
 
-static int first_push = 0;
+
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
