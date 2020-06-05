@@ -280,6 +280,7 @@ static int inter_register_cdev(void)
 
 int __init iom_fpga_driver_init(void)
 {
+    int result;
     if((result = inter_register_cdev()) < 0 )
         return result;
     printk(KERN_ALERT "Init Module Success \n");
