@@ -79,6 +79,7 @@ release:    iom_fpga_driver_release,
 //the function which opens the drivers;
 int iom_fpga_driver_open(struct inode *minode, struct file *mfile)
 {
+    printk("opend\n");
     if(fpga_fnd_port_usage != 0) return -EBUSY;
     if(kernel_timer_usage != 0) return -EBUSY;
     
