@@ -201,8 +201,8 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         curr = jiffies;
         first_push = 1;
         if(curr - prev > 2.9 * 1000){
-            end_of_program_ = 0;
-            exit_signal = 1;
+            //end_of_program_ = 0;
+            //exit_signal = 1;
         }
         prev = curr;
     }
