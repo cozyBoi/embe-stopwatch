@@ -71,6 +71,27 @@ int iom_fpga_driver_open(struct inode *minode, struct file *mfile)
     if(fpga_fnd_port_usage != 0) return -EBUSY;
     if(kernel_timer_usage != 0) return -EBUSY;
     
+    int irq;
+    gpio_direction_input(IMX_GPIO_NR(1,11));
+    irq = gpio_to_irq(IMX_GPIO_NR(1,11));
+    request_irq (irq, &home_handler, IRQF_TRIGGER_FALLING, "home", NULL);
+    
+    gpio_direction_input(IMX_GPIO_NR(1,12));
+    irq = gpio_to_irq(IMX_GPIO_NR(1,12));
+    request_irq (irq, &back_handler, IRQF_TRIGGER_FALLING, "back", NULL);
+    
+    gpio_direction_input(IMX_GPIO_NR(2,15));
+    irq = gpio_to_irq(IMX_GPIO_NR(2,15));
+    request_irq (irq, vol_up_handler, IRQF_TRIGGER_FALLING, "vol_up", NULL);
+    
+    gpio_direction_input(IMX_GPIO_NR(5,14));
+    irq = gpio_to_irq(IMX_GPIO_NR(5,14));
+    request_irq (irq, vol_down_push_handler, IRQF_TRIGGER_FALLING, "vol_down_push", NULL);
+    
+    gpio_direction_input(IMX_GPIO_NR(5,14));
+    irq = gpio_to_irq(IMX_GPIO_NR(5,14));
+    request_irq (irq, vol_down_pull_handler, IRQF_TRIGGER_RISING, "vol_down_pull", NULL);
+    
     fpga_fnd_port_usage = 1;
     kernel_timer_usage = 1;
     return 0;
@@ -86,6 +107,12 @@ int iom_fpga_driver_release(struct inode *minode, struct file *mfile)
 {
     fpga_fnd_port_usage = 0;
     kernel_timer_usage = 0;
+    
+    free_irq(gpio_to_irq(IMX_GPIO_NR(1, 11)), NULL);
+    free_irq(gpio_to_irq(IMX_GPIO_NR(1, 12)), NULL);
+    free_irq(gpio_to_irq(IMX_GPIO_NR(2, 15)), NULL);
+    free_irq(gpio_to_irq(IMX_GPIO_NR(5, 14)), NULL);
+    
     return 0;
 }
 
@@ -232,13 +259,6 @@ int __init iom_fpga_driver_init(void)
     printk("init module\n");
     
     printk("init module, %s major number : %d\n", "dev drivers", 242);
-    
-    request_irq (0x1000, home_handler, NULL, "home", NULL);
-    request_irq (0x1001, back_handler, NULL, "back", NULL);
-    request_irq (0x1002, vol_up_handler, NULL, "vol_up", NULL);
-    request_irq (0x1003, vol_down_push_handler, NULL, "vol_down_push", NULL);
-    request_irq (0x1004, vol_down_pull_handler, NULL, "vol_down_pull", NULL);
-    
     return 0;
 }
 
@@ -250,11 +270,6 @@ void __exit iom_fpga_driver_exit(void)
     del_timer_sync(&mydata.timer);
     
     unregister_chrdev(242, "/dev/stopwatch");
-    free_irq(0x1000,"home");
-    free_irq(0x1001,"back");
-    free_irq(0x1002,"vol_up");
-    free_irq(0x1003,"vol_down_push");
-    free_irq(0x1004,"vol_down_pull");
 }
 
 module_init(iom_fpga_driver_init);
