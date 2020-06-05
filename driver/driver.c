@@ -233,7 +233,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         first_push = 1;
         end_of_program_ = 0;
         del_timer_sync(&mydata.timer);
-        __wake_up(&wq_write, 1, 1, NULL);
+        wake_up_interruptible(&wq_write);
     }
     return IRQ_HANDLED;
 }
