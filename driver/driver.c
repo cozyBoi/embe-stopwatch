@@ -89,6 +89,19 @@ static unsigned int fnd_value[4];
 static int timer_init = 0;
 static int end_three_sencond_flag = 0, end_three_sencond_cnt = 0, end_of_program = 0;
 
+void end_three_sencond(){
+    if(end_three_sencond_cnt >= 30){
+        end_of_program = 1;
+    }
+    
+    if(exit_signal_down){
+        exit_signal_down = 0;
+        end_three_sencond_cnt = 0;
+        return ;
+    }
+    end_three_sencond_cnt++;
+}
+
 void up_cnt(){
     fnd_value[0]++;
     if(fnd_value[0] == 10){
