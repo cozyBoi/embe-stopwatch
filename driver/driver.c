@@ -192,7 +192,7 @@ static int ENDENDEND = 0;
 
 void aassign(){
     unsigned long mminus = curr - prev;
-    unsigned long proddd = 3 * HZ;
+    unsigned long proddd = 29 * HZ / 10;
     printk("%ld - %ld\n", mminus, proddd);
     int condi = (mminus >= proddd);
     if(condi){
