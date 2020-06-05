@@ -206,7 +206,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         curr = jiffies;
         first_push = 1;
         int mminus = curr - prev;
-        if(mminus > 2.9 * HZ) aassign();
+        //if(mminus > 2.9 * HZ) aassign();
         prev = curr;
     }
     
