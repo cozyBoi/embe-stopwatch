@@ -274,9 +274,9 @@ static int inter_register_cdev(void)
 	int error;
 	if(inter_major) {
 		inter_dev = MKDEV(inter_major, inter_minor);
-		error = register_chrdev_region(inter_dev,1,"inter");
+		error = register_chrdev_region(inter_dev,1,"stopwatch");
 	}else{
-		error = alloc_chrdev_region(&inter_dev,inter_minor,1,"inter");
+		error = alloc_chrdev_region(&inter_dev,inter_minor,1,"stopwatch");
 		inter_major = MAJOR(inter_dev);
 	}
 	if(error<0) {
@@ -300,7 +300,7 @@ static int __init inter_init(void) {
 	if((result = inter_register_cdev()) < 0 )
 		return result;
 	printk(KERN_ALERT "Init Module Success \n");
-	printk(KERN_ALERT "Device : /dev/inter, Major Num : 246 \n");
+	printk(KERN_ALERT "Device : /dev/inter, Major Num : 242 \n");
 	return 0;
 }
 
@@ -312,4 +312,4 @@ static void __exit inter_exit(void) {
 
 module_init(inter_init);
 module_exit(inter_exit);
-	MODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL");
