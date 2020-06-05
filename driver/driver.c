@@ -187,8 +187,8 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 }
 
 
-static u64 prev_hz = 1;
-static u64 curr_hz = 1;
+unsigned long jinhoon = 1;
+unsigned long seungjin = 1;
 static int end_of_program_ = 0;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
@@ -197,17 +197,17 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     if (first_push){
         printk("first push");
         first_push = 0;
-        prev_hz = get_jiffies_64();
+        jinhoon = get_jiffies_64();
     }
     else{
         
         printk("n'th push");
-        curr_hz = get_jiffies_64();
-        if (curr_hz - prev_hz >= 2.9*HZ){
+        seungjin = get_jiffies_64();
+        if (seungjin - jinhoon >= 2.9*HZ){
             end_of_program_ = 1;
             exit_signal = 1;
         }
-        prev_hz = curr_hz;
+        jinhoon = seungjin;
         first_push = 1;
     }
     
