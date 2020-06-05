@@ -88,27 +88,7 @@ static struct file_operations inter_fops =
 static int exit_signal = 0, exit_signal_down = 0;
 static unsigned int fnd_value[4];
 static int timer_init = 0;
-static int end_three_sencond_flag = 0, end_three_sencond_cnt = 0, end_of_program = 0;
-static int first_push = 0;
-
-void end_three_sencond(){
-    mydata2.timer.expires = jiffies + HZ/10;
-    mydata2.timer.data = (unsigned long)&mydata2;
-    mydata2.timer.function = end_three_sencond;
-    add_timer(&mydata2.timer);
-    
-    if(end_three_sencond_cnt >= 30){
-        end_of_program = 1;
-    }
-    
-    if(exit_signal_down){
-        exit_signal_down = 0;
-        end_three_sencond_cnt = 0;
-        first_push = 0;
-        return ;
-    }
-    end_three_sencond_cnt++;
-}
+static int first_push = 1;
 
 void up_cnt(){
     fnd_value[0]++;
@@ -210,28 +190,31 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 
 
 static u64 prev_hz = 1;
+static int end_of_program_ = 0;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
-    if (first_push == 0){
-        first_push = 1;
+    if (first_push){
+        printk("first push");
+        first_push = 0;
         prev_hz = get_jiffies_64();
     }
     else{
+        printk("n'th push");
         u64 cur_hz = get_jiffies_64();
         if (cur_hz - prev_hz >= 3*HZ){
-            end_of_program = 1;
+            end_of_program_ = 1;
         }
         prev_hz = cur_hz;
     }
     
     exit_signal_down = 1;
     int i;
-    if(end_of_program){
+    if(end_of_program_){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
-        first_push = 0;
-        end_of_program = 0;
+        first_push = 1;
+        end_of_program_ = 0;
         wake_up_interruptible(&wq_write);
     }
     return IRQ_HANDLED;
@@ -329,7 +312,7 @@ static int __init inter_init(void) {
 	printk(KERN_ALERT "Init Module Success \n");
 	printk(KERN_ALERT "Device : /dev/inter, Major Num : 242 \n");
     
-    end_of_program = 0;
+    end_of_program_ = 0;
     iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);
     init_timer(&(mydata.timer));
 	return 0;
