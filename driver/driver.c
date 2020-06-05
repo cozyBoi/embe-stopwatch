@@ -106,14 +106,17 @@ void end_three_sencond(){
 void up_cnt(){
     fnd_value[0]++;
     if(fnd_value[0] == 10){
+        fnd_value[0] = 0;
         fnd_value[1]++;
     }
     
     if(fnd_value[1] == 6){
+        fnd_value[1] = 0;
         fnd_value[2]++;
     }
     
     if(fnd_value[2] == 10){
+        fnd_value[2] = 0;
         fnd_value[3]++;
     }
     
@@ -182,7 +185,7 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt2!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 12)));
     exit_signal = 1;
     timer_init = 0;
-        return IRQ_HANDLED;
+    return IRQ_HANDLED;
 }
 
 irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
