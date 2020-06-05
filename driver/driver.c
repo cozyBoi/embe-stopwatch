@@ -9,9 +9,6 @@
 #include <asm/ioctl.h>
 #include <linux/kernel.h>
 #include <linux/ioport.h>
-#include <linux/module.h>
-#include <linux/fs.h>
-#include <linux/init.h>
 #include <linux/version.h>
 #include <linux/timer.h>
 #include <linux/uaccess.h>
@@ -26,21 +23,6 @@
 #include <asm/uaccess.h>
 #include <linux/cdev.h>
 
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/interrupt.h>
-#include <asm/irq.h>
-#include <mach/gpio.h>
-#include <linux/platform_device.h>
-#include <asm/gpio.h>
-#include <linux/wait.h>
-#include <linux/fs.h>
-#include <linux/init.h>
-#include <asm/io.h>
-#include <asm/uaccess.h>
-#include <linux/ioport.h>
-#include <linux/version.h>
-#include <linux/cdev.h>
 
 static int inter_major=242, inter_minor=0;
 static int result;
@@ -233,7 +215,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         first_push = 1;
         end_of_program_ = 0;
         del_timer_sync(&mydata.timer);
-        wake_up_interruptible(&wq_write);
+        //__wake_up(&wq_write, 1, 1, NULL);
     }
     return IRQ_HANDLED;
 }
