@@ -188,7 +188,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 
 unsigned long curr = 0;
 unsigned long prev = 0;
-static int end_of_program_ = 0;
+static int ENDENDEND = 0;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
@@ -201,17 +201,17 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         curr = jiffies;
         first_push = 1;
         if(curr - prev > 2.9 * 1000){
-            //end_of_program_ = 0;
-            //exit_signal = 1;
+            ENDENDEND = 0;
+            exit_signal = 1;
         }
         prev = curr;
     }
     
-    if(end_of_program_){
+    if(ENDENDEND){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
         first_push = 1;
-        end_of_program_ = 0;
+        ENDENDEND = 0;
         del_timer_sync(&mydata.timer);
         __wake_up(&wq_write, 1, 1, NULL);
     }
@@ -274,7 +274,7 @@ static int inter_release(struct inode *minode, struct file *mfile){
     timer_init = 0;
     first_push = 1;
     prev = 1;
-    end_of_program_ = 0;
+    ENDENDEND = 0;
     blinking_cnt = 0;
     
     printk(KERN_ALERT "Release Module\n");
@@ -321,7 +321,7 @@ static int __init inter_init(void) {
 	printk(KERN_ALERT "Init Module Success \n");
 	printk(KERN_ALERT "Device : /dev/inter, Major Num : 242 \n");
     
-    end_of_program_ = 0;
+    ENDENDEND = 0;
     iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);
 	return 0;
 }
