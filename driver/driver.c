@@ -190,6 +190,11 @@ unsigned long curr = 0;
 unsigned long prev = 0;
 static int ENDENDEND = 0;
 
+void aassign(){
+    ENDENDEND = 0;
+    EXITEXIT = 1;
+}
+
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
     int i;
@@ -200,10 +205,8 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     else{
         curr = jiffies;
         first_push = 1;
-        if(curr - prev > 2.9 * 1000){
-            ENDENDEND = 0;
-            EXITEXIT = 1;
-        }
+        int mminus = curr - prev;
+        if(mminus > 2.9 * HZ) aassign();
         prev = curr;
     }
     
