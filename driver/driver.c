@@ -49,6 +49,7 @@ static int blink_cnt = 1;
 // define functions...
 int iom_fpga_driver_open(struct inode *minode, struct file *mfile);
 int iom_fpga_driver_release(struct inode *minode, struct file *mfile);
+int iom_fpga_driver_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos);
 
 int fnd_write(unsigned int value[4]);
 
@@ -74,7 +75,7 @@ int iom_fpga_driver_open(struct inode *minode, struct file *mfile)
 }
 
 int iom_fpga_driver_write(struct file *filp, const char *buf, size_t count, loff_t *f_pos){
-    interruptible_sleep_on(&wq_write);
+    interruptible_sleep_on(&wq);
     return 0;
 }
 
@@ -198,6 +199,7 @@ irqreturn_t vol_down_push_handler( int irq, void * dev_id, struct pt_regs *regs 
 }
 
 irqreturn_t vol_down_pull_handler( int irq, void * dev_id, struct pt_regs *regs ){
+    int i = 0;
     exit_signal_down = 1;
     if(end_of_program){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
