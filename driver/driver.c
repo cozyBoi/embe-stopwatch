@@ -91,6 +91,11 @@ static int timer_init = 0;
 static int end_three_sencond_flag = 0, end_three_sencond_cnt = 0, end_of_program = 0;
 
 void end_three_sencond(){
+    mydata.timer.expires = jiffies + HZ/10;
+    mydata.timer.data = (unsigned long)&mydata2;
+    mydata.timer.function = end_three_sencond;
+    add_timer(&mydata2.timer);
+    
     if(end_three_sencond_cnt >= 30){
         end_of_program = 1;
     }
