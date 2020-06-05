@@ -249,7 +249,7 @@ static int inter_open(struct inode *minode, struct file *mfile){
     gpio_direction_input(IMX_GPIO_NR(5,14));
     irq = gpio_to_irq(IMX_GPIO_NR(5,14));
     printk(KERN_ALERT "IRQ Number : %d\n",irq);
-    request_irq (irq, vol_down_push_handler, IRQF_TRIGGER_FALLING, "vol_down_push", NULL);
+    request_irq (irq, inter_handler4, IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING, "vol_down", NULL);
 //    request_irq (irq, vol_down_pull_handler, IRQF_TRIGGER_RISING, "vol_down_pull", NULL);
     
     fpga_fnd_port_usage = 1;
