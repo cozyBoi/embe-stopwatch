@@ -92,12 +92,12 @@ static int end_three_sencond_flag = 0, end_three_sencond_cnt = 0, end_of_program
 static int first_push = 0;
 
 void end_three_sencond(){
-    mydata2.timer.expires = jiffies + HZ/2;
+    mydata2.timer.expires = jiffies + HZ/10;
     mydata2.timer.data = (unsigned long)&mydata2;
     mydata2.timer.function = end_three_sencond;
     add_timer(&mydata2.timer);
     
-    if(end_three_sencond_cnt >= 6){
+    if(end_three_sencond_cnt >= 30){
         end_of_program = 1;
     }
     
@@ -214,7 +214,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
     if(!first_push){
         first_push = 1;
-        mydata2.timer.expires = jiffies + HZ/2;
+        mydata2.timer.expires = jiffies + HZ/10;
         mydata2.timer.data = (unsigned long)&mydata2;
         mydata2.timer.function = end_three_sencond;
         add_timer(&mydata2.timer);
@@ -234,6 +234,8 @@ static int inter_open(struct inode *minode, struct file *mfile){
 	int ret;
 	int irq;
 
+    init_timer(&(mydata2.timer));
+    
 	printk(KERN_ALERT "Open Module\n");
 
 	// int1
@@ -266,6 +268,8 @@ static int inter_open(struct inode *minode, struct file *mfile){
 }
 
 static int inter_release(struct inode *minode, struct file *mfile){
+    del_timer_sync(&mydata2.timer);
+    
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 11)), NULL);
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 12)), NULL);
 	free_irq(gpio_to_irq(IMX_GPIO_NR(2, 15)), NULL);
@@ -321,14 +325,12 @@ static int __init inter_init(void) {
     end_of_program = 0;
     iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);
     init_timer(&(mydata.timer));
-    init_timer(&(mydata2.timer));
 	return 0;
 }
 
 static void __exit inter_exit(void) {
     iounmap(iom_fpga_fnd_addr);
     del_timer_sync(&mydata.timer);
-    del_timer_sync(&mydata2.timer);
     cdev_del(&inter_cdev);
 	unregister_chrdev_region(inter_dev, 1);
 	printk(KERN_ALERT "Remove Module Success \n");
