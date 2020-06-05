@@ -310,11 +310,17 @@ static int __init inter_init(void) {
 		return result;
 	printk(KERN_ALERT "Init Module Success \n");
 	printk(KERN_ALERT "Device : /dev/inter, Major Num : 242 \n");
+    
+    end_of_program = 0;
+    iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);
+    init_timer(&(mydata.timer));
 	return 0;
 }
 
 static void __exit inter_exit(void) {
-	cdev_del(&inter_cdev);
+    iounmap(iom_fpga_fnd_addr);
+    del_timer_sync(&mydata.timer);
+    cdev_del(&inter_cdev);
 	unregister_chrdev_region(inter_dev, 1);
 	printk(KERN_ALERT "Remove Module Success \n");
 }
