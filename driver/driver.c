@@ -152,7 +152,6 @@ static void kernel_timer_blink(unsigned long timeout) {
     printk("kernel_timer_blink %d\n", p_data->count);
     
     if(exit_signal){
-        exit_signal = 0;
         return;
     }
     if(blinking_cnt >= 10){
@@ -175,6 +174,7 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 	printk("home handler\n");
     if(!timer_init){
         printk("hi!\n");
+        exit_signal = 0;
         timer_init = 1;
         mydata.timer.expires = jiffies + HZ/10;
         mydata.timer.data = (unsigned long)&mydata;
