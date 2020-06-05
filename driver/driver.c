@@ -188,6 +188,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 
 
 static u64 prev_hz = 1;
+static u64 cur_hz = 1;
 static int end_of_program_ = 0;
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
@@ -199,15 +200,15 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         prev_hz = get_jiffies_64();
     }
     else{
-        /*
+        
         printk("n'th push");
-        u64 cur_hz = get_jiffies_64();
+        cur_hz = get_jiffies_64();
         if (cur_hz - prev_hz >= 2.9*HZ){
             end_of_program_ = 1;
             exit_signal = 1;
         }
         prev_hz = cur_hz;
-        first_push = 1;*/
+        first_push = 1;
     }
     
     int i;
