@@ -202,7 +202,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     else{
         printk("n'th push");
         u64 cur_hz = get_jiffies_64();
-        if (cur_hz - prev_hz >= 3*HZ){
+        if (cur_hz - prev_hz >= 2.9*HZ){
             end_of_program_ = 1;
         }
         prev_hz = cur_hz;
@@ -224,6 +224,7 @@ static int inter_open(struct inode *minode, struct file *mfile){
 	int ret;
 	int irq;
 
+    init_timer(&(mydata.timer));
     init_timer(&(mydata2.timer));
     
 	printk(KERN_ALERT "Open Module\n");
@@ -259,6 +260,7 @@ static int inter_open(struct inode *minode, struct file *mfile){
 
 static int inter_release(struct inode *minode, struct file *mfile){
     del_timer_sync(&mydata2.timer);
+    del_timer_sync(&mydata.timer);
     
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 11)), NULL);
 	free_irq(gpio_to_irq(IMX_GPIO_NR(1, 12)), NULL);
@@ -267,6 +269,17 @@ static int inter_release(struct inode *minode, struct file *mfile){
 	
     fpga_fnd_port_usage = 0;
     kernel_timer_usage = 0;
+    
+    exit_signal = 0;
+    exit_signal_down = 0;
+    int i = 0;
+    for(i = 0; i < 4; i++) fnd_value[i] = 0;
+    fnd_write(fnd_value);
+    timer_init = 0;
+    first_push = 1;
+    prev_hz = 1;
+    end_of_program_ = 0;
+    blinking_cnt = 0;
     
     printk(KERN_ALERT "Release Module\n");
 	return 0;
@@ -314,13 +327,11 @@ static int __init inter_init(void) {
     
     end_of_program_ = 0;
     iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);
-    init_timer(&(mydata.timer));
 	return 0;
 }
 
 static void __exit inter_exit(void) {
     iounmap(iom_fpga_fnd_addr);
-    del_timer_sync(&mydata.timer);
     cdev_del(&inter_cdev);
 	unregister_chrdev_region(inter_dev, 1);
 	printk(KERN_ALERT "Remove Module Success \n");
