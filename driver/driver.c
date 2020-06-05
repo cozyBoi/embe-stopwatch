@@ -202,31 +202,19 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
-    
-        return IRQ_HANDLED;
-}
-
-irqreturn_t vol_down_push_handler( int irq, void * dev_id, struct pt_regs *regs ){
-    timer_init = 1;
-    mydata.timer.expires = jiffies + 10;
+    mydata.timer.expires = jiffies + HZ/10;
     mydata.timer.data = (unsigned long)&mydata;
     mydata.timer.function = end_three_sencond;
     add_timer(&mydata.timer);
-    return IRQ_HANDLED;
-}
-
-irqreturn_t vol_down_pull_handler( int irq, void * dev_id, struct pt_regs *regs ){
-    int i = 0;
+    
     exit_signal_down = 1;
     if(end_of_program){
         for(i = 0; i < 4; i++) fnd_value[i] = 0;
         fnd_write(fnd_value);
         wake_up_interruptible(&wq_write);
     }
-    
     return IRQ_HANDLED;
 }
-
 
 static int inter_open(struct inode *minode, struct file *mfile){
 	int ret;
